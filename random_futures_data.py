@@ -120,3 +120,24 @@ def process_futures(symbols, sessions, metadata):
 
         
 
+def make_meta(sid, metadata, df, sessions):
+    # Check first and last date
+    start_date = df.index[0]
+    end_date = df.index[-1]
+    
+    # The auto_close date is the day after the last trade
+    ac_date = end_date + pd.Timedelta(days=1)
+    
+    symbol = df.iloc[0]['symbol']
+    root_sym = df.iloc[0]['root_symbol']
+    exchng = futures_lookup.loc[futures_lookup['root_symbol'] == root_sym]['exchange'].iloc[0]
+    exp_date = end_date
+    
+    # Add notice day if you have one
+    # Tip: set notice date to one month prior ro expiry for commodity markets
+    notice_date = ac_date
+    tick_size = 0.0001 # Placeholder
+    
+    # Add a row to the metadata DataFrame
+    metadata.loc[sid] = start_date, end_date, ac_date, symbol, \
+    root_sym, exp_date, notice_date, tick_size, exchng
